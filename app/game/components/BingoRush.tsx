@@ -34,6 +34,7 @@ export default function BingoRush() {
           evLog={g.evLog} flashI={g.flashI} bombSet={g.bombSet}
           placed={g.placed} effectivePool={g.effectivePool}
           celebration={g.celebration}
+          highlightCells={g.highlightCells}
         />
       )}
       {g.phase === "result" && g.result && (

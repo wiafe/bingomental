@@ -29,6 +29,9 @@ export default function useGameState() {
   const [result, setResult] = useState<RunResult | null>(null);
   const [effectivePool, setEffectivePool] = useState(12);
   const [celebration, setCelebration] = useState<Celebration | null>(null);
+  const [highlightCells, setHighlightCells] = useState<Map<number, number>>(new Map());
+  const celebQueue = useRef<Array<{ pat: { id: string; name: string; type: string; cells: number[] }; coins: number }>>([]);
+  const celebrating = useRef(false);
 
   const timer = useRef<ReturnType<typeof setInterval> | null>(null);
   const RS = useRef<RunState | null>(null);
@@ -96,6 +99,48 @@ export default function useGameState() {
     setPhase("result");
   }
 
+  function resumeCalls() {
+    const rs = RS.current;
+    if (!rs || rs.pool.length === 0) { endRun(); return; }
+    const b = rs.b;
+    const s = statsRef.current || deriveStats(unlocked);
+    const ms = Math.round(b.ms * s.speedMult);
+    timer.current = setInterval(tick, ms);
+  }
+
+  function processCelebQueue(isBlackout = false) {
+    const item = celebQueue.current.shift();
+    if (!item) {
+      celebrating.current = false;
+      setHighlightCells(new Map());
+      setCelebration(null);
+      if (isBlackout) {
+        setTimeout(endRun, 400);
+      } else {
+        resumeCalls();
+      }
+      return;
+    }
+    celebrating.current = true;
+    setHighlightCells(new Map(item.pat.cells.map((c, i) => [c, i])));
+    setCelebration({ patName: item.pat.name, patType: item.pat.type, coins: item.coins, id: Date.now() + Math.random() });
+    const hasMore = celebQueue.current.length > 0;
+    setTimeout(() => {
+      if (hasMore) {
+        processCelebQueue(isBlackout);
+      } else {
+        celebrating.current = false;
+        setHighlightCells(new Map());
+        setCelebration(null);
+        if (isBlackout) {
+          setTimeout(endRun, 400);
+        } else {
+          resumeCalls();
+        }
+      }
+    }, 2000);
+  }
+
   const tick = useCallback(() => {
     const rs = RS.current;
     if (!rs || rs.pool.length === 0) { endRun(); return; }
@@ -131,6 +176,7 @@ export default function useGameState() {
     setDaubed(new Set(d));
     const goldSet = new Set(Object.entries(pl).filter(([, v]) => v === "gold").map(([k]) => +k));
     let bk = false;
+    const newPats: Array<{ pat: typeof pats[number]; coins: number }> = [];
     pats.forEach(pat => {
       if (rs.done.has(pat.id) || !pat.cells.every(ci => d.has(ci))) return;
       rs.done.add(pat.id);
@@ -139,11 +185,17 @@ export default function useGameState() {
       setRunCoins(rs.coins);
       pushEv(pat.name, coins);
       setDonePats(new Set(rs.done));
-      setCelebration({ patName: pat.name, patType: pat.type, coins, id: Date.now() + Math.random() });
-      setTimeout(() => setCelebration(null), 1800);
+      newPats.push({ pat, coins });
       if (pat.id === "blackout") bk = true;
     });
-    if (bk) {
+    if (newPats.length > 0) {
+      // Pause calls for celebration
+      if (timer.current) clearInterval(timer.current);
+      celebQueue.current.push(...newPats);
+      if (!celebrating.current) {
+        processCelebQueue(bk);
+      }
+    } else if (bk) {
       if (timer.current) clearInterval(timer.current);
       setTimeout(endRun, 800);
     }
@@ -172,6 +224,9 @@ export default function useGameState() {
     setFlashI(-1);
     setBombSet(new Set());
     setCelebration(null);
+    setHighlightCells(new Map());
+    celebQueue.current = [];
+    celebrating.current = false;
     setEffectivePool(ep);
     setPhase("run");
     const ms = Math.round(b.ms * s.speedMult);
@@ -192,7 +247,7 @@ export default function useGameState() {
     phase, setPhase, board, st,
     // Run state
     daubed, called, lastNum, donePats, runCoins, evLog, flashI, bombSet,
-    result, effectivePool, celebration,
+    result, effectivePool, celebration, highlightCells,
     // Actions
     buyNode, goPrep, startRun, goNextRun,
   };

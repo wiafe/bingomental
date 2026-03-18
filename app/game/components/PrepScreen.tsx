@@ -180,11 +180,6 @@ export default function PrepScreen({ frags, unlocked, boardId, setBoardId, place
         </div>
       </Panel>
 
-      {ownedAs.length === 0 && (
-        <div style={{ textAlign: "center", fontSize: 12, color: "var(--mut)", letterSpacing: ".2em", margin: "10px 0 14px", opacity: 0.6 }}>
-          UNLOCK ABILITIES FROM THE META SCREEN
-        </div>
-      )}
       <Btn label="▶  LAUNCH RUN" primary full onClick={onLaunch} style={{ marginTop: 4 }} />
     </div>
   );
