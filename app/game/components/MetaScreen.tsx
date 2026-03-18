@@ -61,10 +61,10 @@ export default function MetaScreen({ xp, frags, runs, bestRun, unlocked, onBuy, 
       <Btn label="▶  PREPARE RUN" primary full onClick={onPrepare} style={{ marginTop: 14, marginBottom: 14 }} />
 
       {/* Track labels */}
-      <div style={{ display: "flex", marginBottom: 4 }}>
-        <div style={{ flex: 1, textAlign: "right", fontSize: 11, letterSpacing: ".3em", color: "rgba(255,255,255,.18)", paddingRight: 6 }}>BOARDS</div>
-        <div style={{ width: 58 }} />
-        <div style={{ flex: 1, fontSize: 11, letterSpacing: ".3em", color: "rgba(255,255,255,.18)", paddingLeft: 6 }}>ABILITIES · UPGRADES</div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 58px 1fr", marginBottom: 4 }}>
+        <div style={{ textAlign: "left", fontSize: 11, letterSpacing: ".3em", color: "rgba(255,255,255,.18)", paddingLeft: 2 }}>BOARDS</div>
+        <div />
+        <div style={{ textAlign: "right", fontSize: 11, letterSpacing: ".3em", color: "rgba(255,255,255,.18)", paddingRight: 2 }}>UPGRADES</div>
       </div>
 
       {/* Timeline */}
@@ -96,7 +96,6 @@ export default function MetaScreen({ xp, frags, runs, bestRun, unlocked, onBuy, 
                 <div className={"tl-spine tl-spine-bot " + (idx === TL.length - 1 ? "" : lv > row.lv ? "spine-lit" : "spine-dim")} />
                 <div
                   className={"tl-dot" + (isCurrent ? " current" : isUnlocked ? " unlocked" : "")}
-                  style={{ transform: `translateY(${hasCtr ? "-70%" : "-50%"})` }}
                 >
                   {row.lv}
                 </div>

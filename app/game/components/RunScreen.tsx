@@ -2,7 +2,7 @@
 
 import { ABILITIES } from "../constants";
 import { freeCell, buildPats, getCellWidth } from "../helpers";
-import type { Board, EventLogEntry } from "../types";
+import type { Board, EventLogEntry, Celebration } from "../types";
 
 interface RunScreenProps {
   board: Board;
@@ -17,9 +17,10 @@ interface RunScreenProps {
   bombSet: Set<number>;
   placed: Record<number, string>;
   effectivePool: number;
+  celebration: Celebration | null;
 }
 
-export default function RunScreen({ board, card, daubed, called, lastNum, donePats, runCoins, evLog, flashI, bombSet, placed, effectivePool }: RunScreenProps) {
+export default function RunScreen({ board, card, daubed, called, lastNum, donePats, runCoins, evLog, flashI, bombSet, placed, effectivePool, celebration }: RunScreenProps) {
   const fi = freeCell(board.size);
   const cnt = called.length;
   const pats = buildPats(board.size);
@@ -119,6 +120,20 @@ export default function RunScreen({ board, card, daubed, called, lastNum, donePa
             const pat = pats.find(p => p.id === pid);
             return pat ? <span key={pid} className="pat-chip">{pat.name}</span> : null;
           })}
+        </div>
+      )}
+
+      {/* Celebration overlay */}
+      {celebration && (
+        <div key={celebration.id} className="celebrate-overlay">
+          <div className="celebrate-flash" />
+          <div className="celebrate-content">
+            <div className="celebrate-label">
+              {celebration.patType === "blackout" ? "BLACKOUT" : "BINGO"}
+            </div>
+            <div className="celebrate-pat">{celebration.patName}</div>
+            <div className="celebrate-coins">+{celebration.coins}</div>
+          </div>
         </div>
       )}
     </div>

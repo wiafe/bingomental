@@ -92,4 +92,11 @@ export interface RunState {
   ep: number;
 }
 
+export interface Celebration {
+  patName: string;
+  patType: string;
+  coins: number;
+  id: number;
+}
+
 export type Phase = "meta" | "prep" | "run" | "result";

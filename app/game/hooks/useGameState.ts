@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { BOARDS, ALL_NODES, ABILITIES } from "../constants";
 import { levelOf, deriveStats, buildCard, buildPool, buildPats, freeCell, calcCoins } from "../helpers";
-import type { Phase, RunState, RunResult, EventLogEntry, DerivedStats } from "../types";
+import type { Phase, RunState, RunResult, EventLogEntry, DerivedStats, Celebration } from "../types";
 
 export default function useGameState() {
   const [xp, setXp] = useState(0);
@@ -28,6 +28,7 @@ export default function useGameState() {
   const [bombSet, setBombSet] = useState(new Set<number>());
   const [result, setResult] = useState<RunResult | null>(null);
   const [effectivePool, setEffectivePool] = useState(12);
+  const [celebration, setCelebration] = useState<Celebration | null>(null);
 
   const timer = useRef<ReturnType<typeof setInterval> | null>(null);
   const RS = useRef<RunState | null>(null);
@@ -138,6 +139,8 @@ export default function useGameState() {
       setRunCoins(rs.coins);
       pushEv(pat.name, coins);
       setDonePats(new Set(rs.done));
+      setCelebration({ patName: pat.name, patType: pat.type, coins, id: Date.now() + Math.random() });
+      setTimeout(() => setCelebration(null), 1800);
       if (pat.id === "blackout") bk = true;
     });
     if (bk) {
@@ -168,6 +171,7 @@ export default function useGameState() {
     setEvLog([]);
     setFlashI(-1);
     setBombSet(new Set());
+    setCelebration(null);
     setEffectivePool(ep);
     setPhase("run");
     const ms = Math.round(b.ms * s.speedMult);
@@ -188,7 +192,7 @@ export default function useGameState() {
     phase, setPhase, board, st,
     // Run state
     daubed, called, lastNum, donePats, runCoins, evLog, flashI, bombSet,
-    result, effectivePool,
+    result, effectivePool, celebration,
     // Actions
     buyNode, goPrep, startRun, goNextRun,
   };

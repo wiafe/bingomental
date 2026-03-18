@@ -33,6 +33,7 @@ export default function BingoRush() {
           lastNum={g.lastNum} donePats={g.donePats} runCoins={g.runCoins}
           evLog={g.evLog} flashI={g.flashI} bombSet={g.bombSet}
           placed={g.placed} effectivePool={g.effectivePool}
+          celebration={g.celebration}
         />
       )}
       {g.phase === "result" && g.result && (

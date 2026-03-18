@@ -42,11 +42,11 @@ button{font-family:var(--mono);cursor:pointer;border:none;outline:none;backgroun
 
 /* Timeline */
 .timeline{position:relative;margin-bottom:18px}
-.tl-row{display:flex;align-items:center;min-height:64px;position:relative}
-.tl-row.has-ctr{min-height:84px}
-.tl-left{flex:1;display:flex;justify-content:flex-end;align-items:center}
-.tl-center{width:58px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;position:relative;align-self:stretch}
-.tl-right{flex:1;display:flex;justify-content:flex-start;align-items:center}
+.tl-row{display:grid;grid-template-columns:1fr 58px 1fr;align-items:center;min-height:64px;position:relative;gap:0}
+.tl-row.has-ctr{min-height:100px}
+.tl-left{display:flex;justify-content:flex-end;align-items:center}
+.tl-center{display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;align-self:stretch}
+.tl-right{display:flex;justify-content:flex-start;align-items:center}
 .tl-connector{height:1px;width:20px;flex-shrink:0;transition:background .2s}
 .tl-spine{position:absolute;left:50%;transform:translateX(-50%);width:2px;transition:background .2s}
 .tl-spine-top{top:0;bottom:50%}
@@ -54,16 +54,16 @@ button{font-family:var(--mono);cursor:pointer;border:none;outline:none;backgroun
 .spine-lit{background:rgba(255,255,255,.22)}
 .spine-dim{background:rgba(255,255,255,.06)}
 .tl-dot{
-  position:absolute;top:50%;
+  position:relative;flex-shrink:0;
   width:32px;height:32px;border-radius:50%;
   display:flex;align-items:center;justify-content:center;
   z-index:2;transition:all .2s;font-size:12px;font-weight:700;
-  border:2px solid rgba(255,255,255,.06);background:rgba(255,255,255,.02);color:transparent;
+  border:2px solid rgba(255,255,255,.06);background:#151515;color:rgba(255,255,255,.25);
 }
 .tl-dot.unlocked{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.32);color:rgba(255,255,255,.55)}
 .tl-dot.current{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.7);color:#f0f0f0;animation:dotPulse 2.2s ease infinite}
 .tl-ctr-badge{
-  position:absolute;top:50%;transform:translateY(10px);
+  flex-shrink:0;margin-top:4px;
   font-size:11px;font-weight:500;letter-spacing:.12em;text-align:center;white-space:nowrap;
   padding:3px 7px;border-radius:4px;z-index:3;transition:all .15s;
   border:1px solid rgba(255,255,255,.04);background:rgba(255,255,255,.01);
@@ -134,6 +134,39 @@ button{font-family:var(--mono);cursor:pointer;border:none;outline:none;backgroun
 
 .ev-line{font-size:12px;font-weight:500;line-height:1.8}
 
+/* Celebration */
+.celebrate-overlay{
+  position:fixed;inset:0;z-index:100;
+  display:flex;align-items:center;justify-content:center;
+  pointer-events:none;
+  animation:celebFade 1.8s ease both;
+}
+.celebrate-flash{
+  position:absolute;inset:0;
+  background:radial-gradient(ellipse at center,rgba(255,255,255,.12) 0%,transparent 70%);
+  animation:celebFlash .6s ease-out both;
+}
+.celebrate-content{
+  position:relative;text-align:center;
+  animation:celebSlam .5s cubic-bezier(.17,.67,.29,1.4) both;
+}
+.celebrate-label{
+  font-family:var(--display);font-size:42px;font-weight:900;
+  letter-spacing:.15em;color:#fff;
+  text-shadow:0 0 40px rgba(255,255,255,.5),0 0 80px rgba(255,255,255,.2);
+  animation:celebPulse 1.2s .3s ease infinite;
+}
+.celebrate-pat{
+  font-size:14px;letter-spacing:.3em;color:rgba(255,255,255,.5);
+  margin-top:8px;text-transform:uppercase;
+}
+.celebrate-coins{
+  font-family:var(--display);font-size:28px;font-weight:700;
+  color:var(--gold);margin-top:12px;
+  animation:celebCoinPop .5s .15s cubic-bezier(.17,.67,.29,1.4) both;
+  text-shadow:0 0 20px rgba(232,232,232,.4);
+}
+
 /* Animations */
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 @keyframes dotPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,255,255,.4)}55%{box-shadow:0 0 0 6px rgba(255,255,255,0)}}
@@ -144,6 +177,11 @@ button{font-family:var(--mono);cursor:pointer;border:none;outline:none;backgroun
 @keyframes coinIn{0%{transform:scale(.8);opacity:0}60%{transform:scale(1.06)}100%{transform:scale(1);opacity:1}}
 @keyframes gPulse{0%,100%{text-shadow:0 0 30px rgba(232,232,232,.25)}50%{text-shadow:0 0 50px rgba(232,232,232,.45)}}
 @keyframes lvPop{0%,100%{transform:scale(1)}45%{transform:scale(1.07)}}
+@keyframes celebFade{0%{opacity:1}70%{opacity:1}100%{opacity:0}}
+@keyframes celebFlash{0%{opacity:0}15%{opacity:1}100%{opacity:0}}
+@keyframes celebSlam{0%{transform:scale(2.5);opacity:0}60%{transform:scale(.95)}100%{transform:scale(1);opacity:1}}
+@keyframes celebPulse{0%,100%{text-shadow:0 0 40px rgba(255,255,255,.5),0 0 80px rgba(255,255,255,.2)}50%{text-shadow:0 0 60px rgba(255,255,255,.7),0 0 120px rgba(255,255,255,.3)}}
+@keyframes celebCoinPop{0%{transform:scale(0) translateY(10px);opacity:0}100%{transform:scale(1) translateY(0);opacity:1}}
 
 ::-webkit-scrollbar{width:4px}
 ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px}
