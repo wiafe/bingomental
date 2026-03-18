@@ -36,7 +36,11 @@ export default function useGameState() {
   const timer = useRef<ReturnType<typeof setInterval> | null>(null);
   const RS = useRef<RunState | null>(null);
   const statsRef = useRef<DerivedStats | null>(null);
+  const xpRef = useRef(xp);
+  const bestRunRef = useRef(bestRun);
 
+  useEffect(() => { xpRef.current = xp; }, [xp]);
+  useEffect(() => { bestRunRef.current = bestRun; }, [bestRun]);
   useEffect(() => () => { if (timer.current) clearInterval(timer.current); }, []);
 
   const board = BOARDS.find(b => b.id === boardId) || BOARDS[0];
@@ -80,12 +84,14 @@ export default function useGameState() {
         setRunCoins(rs.coins);
       }
     });
-    const isNew = rs.coins > bestRun;
+    const currentXp = xpRef.current;
+    const currentBest = bestRunRef.current;
+    const isNew = rs.coins > currentBest;
     const xpGain = 10 + rs.done.size * 8 + (rs.done.has("blackout") ? 30 : 0) + Math.round((rs.b.mult - 1) * 6);
     const s = statsRef.current || deriveStats(unlocked);
     const rawFrags = Math.round((5 + rs.done.size * 3 + (rs.done.has("blackout") ? 15 : 0)) * s.haulMult);
-    const prevLv = levelOf(xp);
-    const nxp = xp + xpGain;
+    const prevLv = levelOf(currentXp);
+    const nxp = currentXp + xpGain;
     const nLv = levelOf(nxp);
     setXp(nxp);
     setFrags(f => f + rawFrags);
