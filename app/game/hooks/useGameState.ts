@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { BOARDS, ALL_NODES, ABILITIES } from "../constants";
-import { levelOf, deriveStats, buildCard, buildPool, buildPats, freeCell, calcCoins } from "../helpers";
+import { levelOf, deriveStats, buildCard, buildPool, buildPats, calcCoins } from "../helpers";
 import type { Phase, RunState, RunResult, EventLogEntry, DerivedStats, Celebration } from "../types";
 
 export default function useGameState() {
@@ -13,7 +13,7 @@ export default function useGameState() {
   const [unlocked, setUnlocked] = useState(new Set(["quick"]));
   const [boardId, setBoardId] = useState("quick");
   const [placed, setPlaced] = useState<Record<number, string>>({});
-  const [card, setCard] = useState<(number | null)[] | null>(null);
+  const [card, setCard] = useState<number[] | null>(null);
   const [rerollsLeft, setRerollsLeft] = useState(0);
   const [phase, setPhase] = useState<Phase>("meta");
 
@@ -38,9 +38,13 @@ export default function useGameState() {
   const statsRef = useRef<DerivedStats | null>(null);
   const xpRef = useRef(xp);
   const bestRunRef = useRef(bestRun);
+  const savedPlacements = useRef<Record<string, Record<number, string>>>({});
+  // Track how often each number is called per board: boardId → { num → { called, appeared } }
+  const numStats = useRef<Record<string, Record<number, { called: number; appeared: number }>>>({});
 
   useEffect(() => { xpRef.current = xp; }, [xp]);
   useEffect(() => { bestRunRef.current = bestRun; }, [bestRun]);
+  useEffect(() => { savedPlacements.current[boardId] = placed; }, [placed, boardId]);
   useEffect(() => () => { if (timer.current) clearInterval(timer.current); }, []);
 
   const board = BOARDS.find(b => b.id === boardId) || BOARDS[0];
@@ -61,7 +65,7 @@ export default function useGameState() {
 
   function goPrep() {
     const s = deriveStats(unlocked);
-    setPlaced({});
+    setPlaced(savedPlacements.current[boardId] || {});
     setRerollsLeft(s.rerolls);
     setCard(buildCard(board.size, board.universe));
     setPhase("prep");
@@ -154,6 +158,15 @@ export default function useGameState() {
     setLastNum(num);
     setCalled(prev => [num, ...prev]);
     const { card: c, b, daubed: d, pats, placed: pl, ep } = rs;
+    // Track call frequency
+    const bs = numStats.current[b.id];
+    if (bs) {
+      const hitOnCard = c.includes(num);
+      if (hitOnCard) {
+        if (!bs[num]) bs[num] = { called: 0, appeared: 0 };
+        bs[num].called++;
+      }
+    }
     const calledSoFar = ep - rs.pool.length;
     if (!rs.wild && calledSoFar >= Math.floor(ep * 0.4)) {
       rs.wild = true;
@@ -212,14 +225,19 @@ export default function useGameState() {
     const b = board;
     const s = deriveStats(unlocked);
     const ep = b.pool + s.poolBonus;
-    const nc = buildCard(b.size, b.universe);
+    const nc = card || buildCard(b.size, b.universe);
     const pool = buildPool(ep, b.universe);
     const pats = buildPats(b.size);
-    const fi = freeCell(b.size);
     const initD = new Set<number>();
-    if (fi >= 0) initD.add(fi);
     Object.entries(placed).forEach(([i, a]) => { if (a === "anchor") initD.add(+i); });
     RS.current = { card: nc, pool: [...pool], pats, b, placed: { ...placed }, daubed: new Set(initD), done: new Set(), coins: 0, evs: [], wild: false, ep };
+    // Track card appearances
+    if (!numStats.current[b.id]) numStats.current[b.id] = {};
+    const bs = numStats.current[b.id];
+    nc.forEach(num => {
+      if (!bs[num]) bs[num] = { called: 0, appeared: 0 };
+      bs[num].appeared++;
+    });
     setCard(nc);
     setDaubed(new Set(initD));
     setCalled([]);
@@ -239,8 +257,22 @@ export default function useGameState() {
     timer.current = setInterval(tick, ms);
   }
 
+  function doReroll() {
+    if (rerollsLeft <= 0) return;
+    setCard(buildCard(board.size, board.universe));
+    setRerollsLeft(r => r - 1);
+  }
+
+  function switchBoard(newBoardId: string) {
+    if (newBoardId === boardId) return;
+    setBoardId(newBoardId);
+    const nb = BOARDS.find(b => b.id === newBoardId) || BOARDS[0];
+    setPlaced(savedPlacements.current[newBoardId] || {});
+    setCard(buildCard(nb.size, nb.universe));
+  }
+
   function goNextRun() {
-    setPlaced({});
+    setPlaced(savedPlacements.current[boardId] || {});
     setRerollsLeft(st.rerolls);
     setCard(buildCard(board.size, board.universe));
     setPhase("prep");
@@ -255,6 +287,7 @@ export default function useGameState() {
     daubed, called, lastNum, donePats, runCoins, evLog, flashI, bombSet,
     result, effectivePool, celebration, highlightCells,
     // Actions
-    buyNode, goPrep, startRun, goNextRun,
+    buyNode, goPrep, startRun, goNextRun, switchBoard, doReroll,
+    getNumStats: (boardId: string, num: number) => numStats.current[boardId]?.[num] || null,
   };
 }

@@ -48,11 +48,11 @@ export default function ResultScreen({ result, xp, frags, onHub, onNext }: Resul
       </Panel>
 
       {result.lvUp && (
-        <Panel style={{ marginBottom: 10, background: "rgba(255,255,255,.03)", borderColor: "rgba(255,255,255,.12)", animation: "fadeUp .5s .1s both" }}>
-          <div style={{ fontFamily: "var(--display)", fontSize: 17, fontWeight: 700, letterSpacing: ".08em", color: "#c0c0c0", animation: "lvPop .5s .3s ease", marginBottom: 5 }}>
+        <Panel style={{ marginBottom: 10, background: "rgba(200,170,80,.06)", borderColor: "rgba(200,170,80,.25)", animation: "fadeUp .5s .1s both" }}>
+          <div style={{ fontFamily: "var(--display)", fontSize: 17, fontWeight: 700, letterSpacing: ".08em", color: "#e8c44a", animation: "lvPop .5s .3s ease", marginBottom: 5 }}>
             ⬆ LEVEL {result.newLv}
           </div>
-          <div style={{ fontSize: 13, color: "#a0a0a0", letterSpacing: ".1em" }}>New nodes available on the progression tree</div>
+          <div style={{ fontSize: 13, color: "#c9a84e", letterSpacing: ".1em" }}>New nodes available on the progression tree</div>
         </Panel>
       )}
 

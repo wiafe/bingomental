@@ -20,10 +20,11 @@ export default function BingoRush() {
       {g.phase === "prep" && g.card && (
         <PrepScreen
           frags={g.frags} unlocked={g.unlocked}
-          boardId={g.boardId} setBoardId={g.setBoardId}
+          boardId={g.boardId} switchBoard={g.switchBoard}
           placed={g.placed} setPlaced={g.setPlaced}
-          card={g.card} setCard={g.setCard}
-          rerollsLeft={g.rerollsLeft} setRerollsLeft={g.setRerollsLeft}
+          card={g.card}
+          rerollsLeft={g.rerollsLeft} doReroll={g.doReroll}
+          getNumStats={g.getNumStats}
           onLaunch={g.startRun} onBack={() => g.setPhase("meta")}
         />
       )}

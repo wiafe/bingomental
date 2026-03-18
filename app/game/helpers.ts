@@ -17,10 +17,6 @@ export function xpProg(xp: number): XpProgress {
   return { cur, need, pct: Math.min(1, cur / need) };
 }
 
-export function freeCell(sz: number): number {
-  return sz === 5 ? 12 : sz === 3 ? 4 : -1;
-}
-
 export function deriveStats(unlocked: Set<string>): DerivedStats {
   const h = (id: string) => unlocked.has(id);
   return {
@@ -32,16 +28,10 @@ export function deriveStats(unlocked: Set<string>): DerivedStats {
   };
 }
 
-export function buildCard(size: number, universe: number): (number | null)[] {
+export function buildCard(size: number, universe: number): number[] {
   const n = size * size;
-  const fi = freeCell(size);
   const src = Array.from({ length: universe }, (_, i) => i + 1).sort(() => Math.random() - 0.5);
-  const card: (number | null)[] = Array(n).fill(null);
-  let pi = 0;
-  for (let i = 0; i < n; i++) {
-    if (i !== fi) card[i] = src[pi++];
-  }
-  return card;
+  return src.slice(0, n);
 }
 
 export function buildPool(pool: number, universe: number): number[] {
@@ -51,7 +41,6 @@ export function buildPool(pool: number, universe: number): number[] {
 }
 
 export function buildPats(size: number): Pattern[] {
-  const fi = freeCell(size);
   const ps: Pattern[] = [];
 
   for (let r = 0; r < size; r++) {
@@ -65,7 +54,7 @@ export function buildPats(size: number): Pattern[] {
   ps.push({ id: "corners", name: "Corners", type: "corners", cells: [0, size - 1, (size - 1) * size, size * size - 1] });
 
   const all = Array.from({ length: size * size }, (_, i) => i);
-  ps.push({ id: "blackout", name: "BLACKOUT", type: "blackout", cells: fi >= 0 ? all.filter(i => i !== fi) : all });
+  ps.push({ id: "blackout", name: "BLACKOUT", type: "blackout", cells: all });
 
   return ps;
 }

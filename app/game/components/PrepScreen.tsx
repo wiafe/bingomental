@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { BOARDS, ABILITIES } from "../constants";
-import { deriveStats, freeCell, buildCard, getCellWidth } from "../helpers";
+import { deriveStats, getCellWidth } from "../helpers";
 import Panel from "./Panel";
 import Btn from "./Btn";
 
@@ -10,30 +10,29 @@ interface PrepScreenProps {
   frags: number;
   unlocked: Set<string>;
   boardId: string;
-  setBoardId: (id: string) => void;
+  switchBoard: (id: string) => void;
   placed: Record<number, string>;
   setPlaced: (p: Record<number, string>) => void;
-  card: (number | null)[];
-  setCard: (c: (number | null)[]) => void;
+  card: number[];
   rerollsLeft: number;
-  setRerollsLeft: React.Dispatch<React.SetStateAction<number>>;
+  doReroll: () => void;
+  getNumStats: (boardId: string, num: number) => { called: number; appeared: number } | null;
   onLaunch: () => void;
   onBack: () => void;
 }
 
-export default function PrepScreen({ frags, unlocked, boardId, setBoardId, placed, setPlaced, card, setCard, rerollsLeft, setRerollsLeft, onLaunch, onBack }: PrepScreenProps) {
+export default function PrepScreen({ frags, unlocked, boardId, switchBoard, placed, setPlaced, card, rerollsLeft, doReroll, getNumStats, onLaunch, onBack }: PrepScreenProps) {
   const [heldAb, setHeldAb] = useState<string | null>(null);
+  const [hoverIdx, setHoverIdx] = useState<number | null>(null);
   const st = deriveStats(unlocked);
   const board = BOARDS.find(b => b.id === boardId) || BOARDS[0];
   const ownedBs = BOARDS.filter(b => unlocked.has(b.id));
   const ownedAs = ABILITIES.filter(a => unlocked.has(a.id));
   const heldData = heldAb ? ABILITIES.find(a => a.id === heldAb) : null;
-  const fi = freeCell(board.size);
   const usedSlots = Object.keys(placed).length;
   const cw = getCellWidth(board.size);
 
   function clickCell(idx: number) {
-    if (idx === fi) return;
     if (!heldAb) {
       if (placed[idx]) {
         const n = { ...placed };
@@ -52,11 +51,9 @@ export default function PrepScreen({ frags, unlocked, boardId, setBoardId, place
     setPlaced(n);
   }
 
-  function doReroll() {
-    if (rerollsLeft <= 0) return;
-    setCard(buildCard(board.size, board.universe));
-    setRerollsLeft(r => r - 1);
-  }
+  const hoveredNum = hoverIdx !== null ? card[hoverIdx] : null;
+  const hoveredStats = hoveredNum !== null ? getNumStats(boardId, hoveredNum) : null;
+  const hoveredAb = hoverIdx !== null && placed[hoverIdx] ? ABILITIES.find(a => a.id === placed[hoverIdx]) : null;
 
   return (
     <div className="screen">
@@ -84,11 +81,7 @@ export default function PrepScreen({ frags, unlocked, boardId, setBoardId, place
                     color: active ? bd.color : "var(--mut)",
                     boxShadow: active ? `0 0 12px ${bd.color}22` : undefined,
                   }}
-                  onClick={() => {
-                    setBoardId(bd.id);
-                    setPlaced({});
-                    setCard(buildCard(bd.size, bd.universe));
-                  }}
+                  onClick={() => switchBoard(bd.id)}
                 >
                   {bd.name}
                 </button>
@@ -151,25 +144,27 @@ export default function PrepScreen({ frags, unlocked, boardId, setBoardId, place
         </div>
         <div style={{ display: "flex", justifyContent: "center" }}>
           <div className="card-grid" style={{ gridTemplateColumns: `repeat(${board.size},${cw}px)`, gap: 5 }}>
-            {card && card.map((num, i) => {
-              const isFree = i === fi;
+            {card.map((num, i) => {
               const ab = placed[i];
               const abData = ab ? ABILITIES.find(a => a.id === ab) : null;
+              const isAnchor = ab === "anchor";
               return (
                 <div
                   key={i}
                   className="cell"
                   onClick={() => clickCell(i)}
+                  onMouseEnter={() => setHoverIdx(i)}
+                  onMouseLeave={() => setHoverIdx(null)}
                   style={{
                     width: cw,
                     height: cw,
-                    background: isFree ? "rgba(255,255,255,.04)" : abData ? abData.color + "18" : "var(--sur)",
-                    borderColor: isFree ? "rgba(255,255,255,.05)" : abData ? abData.color + "50" : "var(--bdr)",
+                    background: isAnchor ? "rgba(255,255,255,.1)" : abData ? abData.color + "18" : "var(--sur)",
+                    borderColor: isAnchor ? "rgba(255,255,255,.3)" : abData ? abData.color + "50" : "var(--bdr)",
                     boxShadow: abData ? `0 0 10px ${abData.color}20` : undefined,
                   }}
                 >
                   {abData && <span className="cell-ab-icon" style={{ color: abData.color }}>{abData.icon}</span>}
-                  {isFree
+                  {isAnchor
                     ? <span className="cell-free">FREE</span>
                     : <span className="cell-num" style={{ fontSize: board.size >= 4 ? 16 : 22, color: abData ? abData.color : "var(--mut)" }}>{num}</span>
                   }
@@ -177,6 +172,35 @@ export default function PrepScreen({ frags, unlocked, boardId, setBoardId, place
               );
             })}
           </div>
+        </div>
+
+        {/* Tooltip */}
+        <div style={{
+          minHeight: 38, marginTop: 10, padding: "6px 10px",
+          borderRadius: 8, background: "rgba(255,255,255,.025)", border: "1px solid rgba(255,255,255,.06)",
+          fontSize: 12, color: "var(--mut)", letterSpacing: ".06em",
+          transition: "opacity .15s", opacity: hoverIdx !== null ? 1 : 0.4,
+        }}>
+          {hoverIdx !== null && hoveredNum !== null ? (
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
+              <div>
+                <span style={{ fontSize: 16, fontWeight: 700, color: "var(--acc)", marginRight: 8 }}>{hoveredNum}</span>
+                {hoveredAb && <span style={{ color: hoveredAb.color }}>{hoveredAb.icon} {hoveredAb.name}</span>}
+              </div>
+              <div style={{ textAlign: "right", fontSize: 11, lineHeight: 1.6 }}>
+                {hoveredStats ? (
+                  <>
+                    <div>appeared <span style={{ color: "var(--acc)" }}>{hoveredStats.appeared}×</span></div>
+                    <div>called <span style={{ color: "var(--acc)" }}>{hoveredStats.called}×</span> · hit rate <span style={{ color: hoveredStats.appeared > 0 ? "var(--acc)" : "var(--mut)" }}>{hoveredStats.appeared > 0 ? Math.round((hoveredStats.called / hoveredStats.appeared) * 100) : 0}%</span></div>
+                  </>
+                ) : (
+                  <div style={{ opacity: 0.5 }}>no data yet</div>
+                )}
+              </div>
+            </div>
+          ) : (
+            <div style={{ opacity: 0.5, fontSize: 11 }}>hover a cell for stats</div>
+          )}
         </div>
       </Panel>
 

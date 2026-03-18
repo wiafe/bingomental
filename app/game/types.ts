@@ -79,7 +79,7 @@ export interface EventLogEntry {
 }
 
 export interface RunState {
-  card: (number | null)[];
+  card: number[];
   pool: number[];
   pats: Pattern[];
   b: Board;

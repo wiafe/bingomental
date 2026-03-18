@@ -1,12 +1,12 @@
 "use client";
 
 import { ABILITIES } from "../constants";
-import { freeCell, buildPats, getCellWidth } from "../helpers";
+import { buildPats, getCellWidth } from "../helpers";
 import type { Board, EventLogEntry, Celebration } from "../types";
 
 interface RunScreenProps {
   board: Board;
-  card: (number | null)[];
+  card: number[];
   daubed: Set<number>;
   called: number[];
   lastNum: number | null;
@@ -22,7 +22,6 @@ interface RunScreenProps {
 }
 
 export default function RunScreen({ board, card, daubed, called, lastNum, donePats, runCoins, evLog, flashI, bombSet, placed, effectivePool, celebration, highlightCells }: RunScreenProps) {
-  const fi = freeCell(board.size);
   const cnt = called.length;
   const pats = buildPats(board.size);
   const cw = getCellWidth(board.size);
@@ -84,8 +83,7 @@ export default function RunScreen({ board, card, daubed, called, lastNum, donePa
       {/* Card */}
       <div style={{ display: "flex", justifyContent: "center", marginBottom: 14 }}>
         <div className="card-grid" style={{ gridTemplateColumns: `repeat(${board.size},${cw}px)`, gap: 6 }}>
-          {card && card.map((num, i) => {
-            const isFree = i === fi;
+          {card.map((num, i) => {
             const isD = daubed.has(i);
             const isF = flashI === i;
             const isB = bombSet.has(i);
@@ -93,21 +91,22 @@ export default function RunScreen({ board, card, daubed, called, lastNum, donePa
             const hlOrder = highlightCells.get(i) ?? 0;
             const ab = placed[i];
             const abData = ab ? ABILITIES.find(a => a.id === ab) : null;
+            const isAnchor = ab === "anchor";
             return (
               <div
                 key={i}
                 className={"cell" + (isD ? " daubed" : "") + (isF ? " flash" : "") + (isB ? " bomb-anim" : "") + (isHL ? " cell-highlight" : "")}
                 style={{
                   width: cw, height: cw,
-                  background: isHL ? "rgba(255,255,255,.22)" : isD ? (isFree ? "rgba(255,255,255,.08)" : abData ? abData.color + "2e" : "rgba(255,255,255,.1)") : "var(--sur)",
+                  background: isHL ? "rgba(255,255,255,.22)" : isD ? (abData ? abData.color + "2e" : "rgba(255,255,255,.1)") : "var(--sur)",
                   borderColor: isHL ? "rgba(255,255,255,.6)" : isD ? (abData ? abData.color + "77" : "rgba(255,255,255,.28)") : "var(--bdr)",
-                  boxShadow: isHL ? "0 0 20px rgba(255,255,255,.35), inset 0 0 12px rgba(255,255,255,.1)" : isF ? "0 0 22px rgba(255,255,255,.4)" : isB ? "0 0 16px #b0b0b0" : isD && !isFree ? "0 0 8px rgba(255,255,255,.15)" : "none",
+                  boxShadow: isHL ? "0 0 20px rgba(255,255,255,.35), inset 0 0 12px rgba(255,255,255,.1)" : isF ? "0 0 22px rgba(255,255,255,.4)" : isB ? "0 0 16px #b0b0b0" : isD ? "0 0 8px rgba(255,255,255,.15)" : "none",
                   animationDelay: isHL ? `${hlOrder * 0.1}s` : undefined,
                   cursor: "default",
                 }}
               >
                 {abData && <span className="cell-ab-icon" style={{ color: isD ? abData.color : abData.color + "66" }}>{abData.icon}</span>}
-                {isFree
+                {isAnchor && isD
                   ? <span className="cell-free">FREE</span>
                   : <span className="cell-num" style={{ fontSize: board.size >= 4 ? 17 : 24, color: isHL ? "#fff" : isD ? (abData ? abData.color : "#d8d8d8") : "var(--mut)" }}>{num}</span>
                 }
