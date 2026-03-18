@@ -32,28 +32,28 @@ export default function MetaScreen({ xp, frags, runs, bestRun, unlocked, onBuy, 
       <Panel>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: lv < 10 ? "12px" : "4px" }}>
           <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
-            <span style={{ fontSize: 8, letterSpacing: ".3em", color: "var(--mut)" }}>LV</span>
-            <span style={{ fontFamily: "var(--display)", fontSize: 32, fontWeight: 900, color: "var(--acc)", lineHeight: 1 }}>{lv}</span>
+            <span style={{ fontSize: 12, letterSpacing: ".3em", color: "var(--mut)" }}>LV</span>
+            <span style={{ fontFamily: "var(--display)", fontSize: 36, fontWeight: 900, color: "var(--acc)", lineHeight: 1 }}>{lv}</span>
           </div>
-          <div style={{ display: "flex", gap: 16 }}>
+          <div style={{ display: "flex", gap: 18 }}>
             {([["FRAGS", `◈ ${frags}`, "#e8e8e8"], ["BEST", bestRun, "var(--txt)"], ["RUNS", runs, "var(--txt)"]] as const).map(([l, v, c]) => (
               <div key={l} style={{ textAlign: "center" }}>
-                <div style={{ fontSize: 7, letterSpacing: ".25em", color: "var(--mut)", marginBottom: 2 }}>{l}</div>
-                <div style={{ fontSize: 15, fontWeight: 700, color: c }}>{v}</div>
+                <div style={{ fontSize: 11, letterSpacing: ".25em", color: "var(--mut)", marginBottom: 2 }}>{l}</div>
+                <div style={{ fontSize: 18, fontWeight: 700, color: c }}>{v}</div>
               </div>
             ))}
           </div>
         </div>
         {lv < 10 ? (
           <>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 8, color: "var(--mut)", letterSpacing: ".1em", marginBottom: 5 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "var(--mut)", letterSpacing: ".1em", marginBottom: 5 }}>
               <span>XP → LV {lv + 1}</span>
               <span>{xp_.cur} / {xp_.need}</span>
             </div>
             <XpBar pct={xp_.pct} />
           </>
         ) : (
-          <div style={{ fontSize: 10, color: "var(--gold)", letterSpacing: ".2em", fontWeight: 700, marginTop: 4 }}>★ MAX LEVEL</div>
+          <div style={{ fontSize: 14, color: "var(--gold)", letterSpacing: ".2em", fontWeight: 700, marginTop: 4 }}>★ MAX LEVEL</div>
         )}
       </Panel>
 
@@ -62,9 +62,9 @@ export default function MetaScreen({ xp, frags, runs, bestRun, unlocked, onBuy, 
 
       {/* Track labels */}
       <div style={{ display: "flex", marginBottom: 4 }}>
-        <div style={{ flex: 1, textAlign: "right", fontSize: 7, letterSpacing: ".3em", color: "rgba(255,255,255,.18)", paddingRight: 6 }}>BOARDS</div>
-        <div style={{ width: 54 }} />
-        <div style={{ flex: 1, fontSize: 7, letterSpacing: ".3em", color: "rgba(255,255,255,.18)", paddingLeft: 6 }}>ABILITIES · UPGRADES</div>
+        <div style={{ flex: 1, textAlign: "right", fontSize: 11, letterSpacing: ".3em", color: "rgba(255,255,255,.18)", paddingRight: 6 }}>BOARDS</div>
+        <div style={{ width: 58 }} />
+        <div style={{ flex: 1, fontSize: 11, letterSpacing: ".3em", color: "rgba(255,255,255,.18)", paddingLeft: 6 }}>ABILITIES · UPGRADES</div>
       </div>
 
       {/* Timeline */}
@@ -113,7 +113,7 @@ export default function MetaScreen({ xp, frags, runs, bestRun, unlocked, onBuy, 
                     {row.ctr.icon} {row.ctr.label}
                     {ctrOwned && <span style={{ opacity: 0.55, marginLeft: 2 }}>✓</span>}
                     {!ctrOwned && (
-                      <div style={{ fontSize: 7, color: isUnlocked ? (ctrAfford ? row.ctr.color + "bb" : "#f87171aa") : "#0d1620", letterSpacing: ".12em", marginTop: 1 }}>
+                      <div style={{ fontSize: 11, color: isUnlocked ? (ctrAfford ? row.ctr.color + "bb" : "#f87171aa") : "#0d1620", letterSpacing: ".12em", marginTop: 1 }}>
                         {isUnlocked ? (row.ctr.cost === 0 ? "FREE" : `◈ ${row.ctr.cost}`) : `LV ${row.lv}`}
                       </div>
                     )}

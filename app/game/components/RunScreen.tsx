@@ -30,18 +30,18 @@ export default function RunScreen({ board, card, daubed, called, lastNum, donePa
       {/* Header */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
         <div>
-          <div style={{ fontSize: 8, letterSpacing: ".3em", color: "var(--mut)" }}>RUNNING</div>
-          <div style={{ fontFamily: "var(--display)", fontSize: 18, fontWeight: 700, letterSpacing: ".08em", color: board.color }}>{board.name}</div>
+          <div style={{ fontSize: 12, letterSpacing: ".3em", color: "var(--mut)" }}>RUNNING</div>
+          <div style={{ fontFamily: "var(--display)", fontSize: 22, fontWeight: 700, letterSpacing: ".08em", color: board.color }}>{board.name}</div>
         </div>
         <div style={{ textAlign: "right" }}>
-          <div style={{ fontSize: 8, letterSpacing: ".25em", color: "var(--mut)" }}>COINS</div>
-          <div style={{ fontFamily: "var(--display)", fontSize: 26, fontWeight: 900, color: "var(--gold)", lineHeight: 1 }}>{runCoins}</div>
+          <div style={{ fontSize: 12, letterSpacing: ".25em", color: "var(--mut)" }}>COINS</div>
+          <div style={{ fontFamily: "var(--display)", fontSize: 30, fontWeight: 900, color: "var(--gold)", lineHeight: 1 }}>{runCoins}</div>
         </div>
       </div>
 
       {/* Pool bar */}
       <div style={{ marginBottom: 16 }}>
-        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 8, color: "var(--mut)", marginBottom: 4, letterSpacing: ".1em" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "var(--mut)", marginBottom: 4, letterSpacing: ".1em" }}>
           <span>CALLS</span>
           <span>{cnt}/{effectivePool}</span>
         </div>
@@ -53,23 +53,23 @@ export default function RunScreen({ board, card, daubed, called, lastNum, donePa
       {/* Call display row */}
       <div style={{ display: "flex", gap: 12, alignItems: "flex-start", marginBottom: 16 }}>
         <div style={{
-          width: 72, height: 72, flexShrink: 0, borderRadius: 12,
+          width: 78, height: 78, flexShrink: 0, borderRadius: 12,
           display: "flex", alignItems: "center", justifyContent: "center",
           background: lastNum ? board.color + "22" : "var(--sur)",
           border: `2px solid ${lastNum ? board.color + "66" : "var(--bdr)"}`,
           boxShadow: lastNum ? `0 0 24px ${board.color}44` : "none",
         }}>
           {lastNum
-            ? <div key={lastNum} style={{ fontFamily: "var(--display)", fontSize: 28, fontWeight: 900, color: board.color, lineHeight: 1, animation: "numPop .22s ease" }}>{lastNum}</div>
-            : <div style={{ fontSize: 10, color: "var(--mut)", animation: "blink 1s infinite" }}>···</div>
+            ? <div key={lastNum} style={{ fontFamily: "var(--display)", fontSize: 32, fontWeight: 900, color: board.color, lineHeight: 1, animation: "numPop .22s ease" }}>{lastNum}</div>
+            : <div style={{ fontSize: 14, color: "var(--mut)", animation: "blink 1s infinite" }}>···</div>
           }
         </div>
-        <div style={{ flex: 1, display: "flex", flexWrap: "wrap", gap: 3, alignContent: "flex-start" }}>
+        <div style={{ flex: 1, display: "flex", flexWrap: "wrap", gap: 4, alignContent: "flex-start" }}>
           {called.slice(1, 12).map((n, i) => (
             <div key={i} className="called-num" style={{ color: `rgba(207,216,232,${Math.max(0.07, 0.38 - i * 0.03)})` }}>{n}</div>
           ))}
         </div>
-        <div style={{ width: 108, flexShrink: 0, textAlign: "right" }}>
+        <div style={{ width: 120, flexShrink: 0, textAlign: "right" }}>
           {evLog.slice(0, 4).map((ev, i) => (
             <div key={ev.id} className="ev-line" style={{
               animation: i === 0 ? "evIn .2s ease" : "none",
@@ -104,7 +104,7 @@ export default function RunScreen({ board, card, daubed, called, lastNum, donePa
                 {abData && <span className="cell-ab-icon" style={{ color: isD ? abData.color : abData.color + "66" }}>{abData.icon}</span>}
                 {isFree
                   ? <span className="cell-free">FREE</span>
-                  : <span className="cell-num" style={{ fontSize: board.size >= 4 ? 14 : 20, color: isD ? (abData ? abData.color : "#d8d8d8") : "var(--mut)" }}>{num}</span>
+                  : <span className="cell-num" style={{ fontSize: board.size >= 4 ? 17 : 24, color: isD ? (abData ? abData.color : "#d8d8d8") : "var(--mut)" }}>{num}</span>
                 }
               </div>
             );

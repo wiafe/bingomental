@@ -33,7 +33,7 @@ export default function TLNode({ node, unlockLv, reverse, level, frags, onBuy }:
       <div className="tl-node-header" style={{ color: owned ? c : avail ? c + "99" : "#1a2535" }}>
         <span>{node.icon}</span>
         <span>{node.label}</span>
-        {owned && <span style={{ opacity: 0.6, marginLeft: 3, fontSize: 7 }}>✓</span>}
+        {owned && <span style={{ opacity: 0.6, marginLeft: 3, fontSize: 11 }}>✓</span>}
       </div>
       <div className="tl-node-sub" style={{ color: owned ? "rgba(255,255,255,.25)" : avail ? "rgba(255,255,255,.18)" : "#0e1a28" }}>
         {node.sub}

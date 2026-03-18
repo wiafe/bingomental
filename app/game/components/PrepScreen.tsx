@@ -62,15 +62,15 @@ export default function PrepScreen({ frags, unlocked, boardId, setBoardId, place
     <div className="screen">
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18 }}>
         <div>
-          <div style={{ fontSize: 8, letterSpacing: ".3em", color: "var(--mut)" }}>PREPARE RUN</div>
-          <div style={{ fontSize: 8, color: "var(--mut)", marginTop: 3 }}>◈ {frags}  ·  {st.slots} slot{st.slots !== 1 ? "s" : ""}  ·  {usedSlots} placed</div>
+          <div style={{ fontSize: 12, letterSpacing: ".3em", color: "var(--mut)" }}>PREPARE RUN</div>
+          <div style={{ fontSize: 12, color: "var(--mut)", marginTop: 3 }}>◈ {frags}  ·  {st.slots} slot{st.slots !== 1 ? "s" : ""}  ·  {usedSlots} placed</div>
         </div>
         <Btn label="← BACK" ghost sm onClick={onBack} />
       </div>
 
       {ownedBs.length > 1 && (
         <Panel style={{ marginBottom: 10 }}>
-          <div style={{ fontSize: 8, letterSpacing: ".3em", color: "var(--mut)", marginBottom: 9 }}>BOARD</div>
+          <div style={{ fontSize: 12, letterSpacing: ".3em", color: "var(--mut)", marginBottom: 9 }}>BOARD</div>
           <div style={{ display: "flex", gap: 7, flexWrap: "wrap" }}>
             {ownedBs.map(bd => {
               const active = bd.id === boardId;
@@ -100,8 +100,8 @@ export default function PrepScreen({ frags, unlocked, boardId, setBoardId, place
 
       {ownedAs.length > 0 && (
         <Panel style={{ marginBottom: 10 }}>
-          <div style={{ fontSize: 8, letterSpacing: ".3em", color: "var(--mut)", marginBottom: 9 }}>
-            ABILITIES <span style={{ fontSize: 7, opacity: 0.6 }}>— hold & place on card</span>
+          <div style={{ fontSize: 12, letterSpacing: ".3em", color: "var(--mut)", marginBottom: 9 }}>
+            ABILITIES <span style={{ fontSize: 11, opacity: 0.6 }}>— hold & place on card</span>
           </div>
           <div style={{ display: "flex", gap: 7, flexWrap: "wrap" }}>
             {ownedAs.map(ab => {
@@ -124,7 +124,7 @@ export default function PrepScreen({ frags, unlocked, boardId, setBoardId, place
             })}
           </div>
           {heldData && (
-            <div style={{ marginTop: 8, fontSize: 8, color: heldData.color, letterSpacing: ".08em", opacity: 0.85 }}>
+            <div style={{ marginTop: 8, fontSize: 12, color: heldData.color, letterSpacing: ".08em", opacity: 0.85 }}>
               {heldData.icon} {heldData.desc}
             </div>
           )}
@@ -133,7 +133,7 @@ export default function PrepScreen({ frags, unlocked, boardId, setBoardId, place
 
       <Panel style={{ marginBottom: 10 }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-          <div style={{ fontSize: 8, letterSpacing: ".3em", color: "var(--mut)" }}>CARD PREVIEW</div>
+          <div style={{ fontSize: 12, letterSpacing: ".3em", color: "var(--mut)" }}>CARD PREVIEW</div>
           {st.rerolls > 0 && (
             <button
               className="btn btn-sm"
@@ -171,7 +171,7 @@ export default function PrepScreen({ frags, unlocked, boardId, setBoardId, place
                   {abData && <span className="cell-ab-icon" style={{ color: abData.color }}>{abData.icon}</span>}
                   {isFree
                     ? <span className="cell-free">FREE</span>
-                    : <span className="cell-num" style={{ fontSize: board.size >= 4 ? 13 : 18, color: abData ? abData.color : "var(--mut)" }}>{num}</span>
+                    : <span className="cell-num" style={{ fontSize: board.size >= 4 ? 16 : 22, color: abData ? abData.color : "var(--mut)" }}>{num}</span>
                   }
                 </div>
               );
@@ -181,7 +181,7 @@ export default function PrepScreen({ frags, unlocked, boardId, setBoardId, place
       </Panel>
 
       {ownedAs.length === 0 && (
-        <div style={{ textAlign: "center", fontSize: 8, color: "var(--mut)", letterSpacing: ".2em", margin: "10px 0 14px", opacity: 0.6 }}>
+        <div style={{ textAlign: "center", fontSize: 12, color: "var(--mut)", letterSpacing: ".2em", margin: "10px 0 14px", opacity: 0.6 }}>
           UNLOCK ABILITIES FROM THE META SCREEN
         </div>
       )}
