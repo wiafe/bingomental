@@ -94,6 +94,7 @@ button{font-family:var(--mono);cursor:pointer;border:none;outline:none;backgroun
   transition:background .15s,border-color .12s,transform .1s,box-shadow .12s;
   font-weight:700;user-select:none;cursor:pointer;
 }
+.cell:hover{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.18);transform:scale(1.06);box-shadow:0 0 12px rgba(255,255,255,.06)}
 .cell-free{font-size:11px;letter-spacing:.2em;color:var(--mut)}
 .cell-num{line-height:1;transition:color .12s}
 .cell-ab-icon{position:absolute;top:3px;right:4px;font-size:12px;line-height:1}

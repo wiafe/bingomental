@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { BOARDS, ALL_NODES, ABILITIES } from "../constants";
 import { levelOf, deriveStats, buildCard, buildPool, buildPats, calcCoins } from "../helpers";
 import type { Phase, RunState, RunResult, EventLogEntry, DerivedStats, Celebration } from "../types";
+import { sfxCall, sfxBomb, sfxWild, sfxBingo, sfxBlackout, sfxJinx, sfxCoins } from "../sfx";
 
 export default function useGameState() {
   const [xp, setXp] = useState(0);
@@ -84,6 +85,7 @@ export default function useGameState() {
     Object.entries(rs.placed).forEach(([i, a]) => {
       if (a === "jinx" && !rs.daubed.has(+i)) {
         rs.coins += 60;
+        sfxJinx();
         pushEv("◌ JINX fires", 60);
         setRunCoins(rs.coins);
       }
@@ -106,6 +108,7 @@ export default function useGameState() {
       lvUp: nLv > prevLv, newLv: nLv > prevLv ? nLv : null,
       boardId: rs.b.id, boardName: rs.b.name, pats: [...rs.done],
     });
+    sfxCoins();
     setPhase("result");
   }
 
@@ -171,11 +174,12 @@ export default function useGameState() {
     if (!rs.wild && calledSoFar >= Math.floor(ep * 0.4)) {
       rs.wild = true;
       Object.entries(pl).forEach(([i, a]) => {
-        if (a === "wild" && !d.has(+i)) { d.add(+i); pushEv("⟳ WILD fires", 0); }
+        if (a === "wild" && !d.has(+i)) { d.add(+i); sfxWild(); pushEv("⟳ WILD fires", 0); }
       });
     }
     const hitI = c.findIndex(n => n === num);
-    if (hitI < 0) { setDaubed(new Set(d)); return; }
+    if (hitI < 0) { sfxCall(false); setDaubed(new Set(d)); return; }
+    sfxCall(true);
     setFlashI(hitI);
     setTimeout(() => setFlashI(-1), 220);
     d.add(hitI);
@@ -189,6 +193,7 @@ export default function useGameState() {
       if (col > 0) bombNbrs.push(r * size + (col - 1));
       if (col < size - 1) bombNbrs.push(r * size + (col + 1));
       bombNbrs.forEach(n => d.add(n));
+      sfxBomb();
       setBombSet(new Set(bombNbrs));
       setTimeout(() => setBombSet(new Set()), 420);
     }
@@ -205,7 +210,7 @@ export default function useGameState() {
       pushEv(pat.name, coins);
       setDonePats(new Set(rs.done));
       newPats.push({ pat, coins });
-      if (pat.id === "blackout") bk = true;
+      if (pat.id === "blackout") { bk = true; sfxBlackout(); } else { sfxBingo(); }
     });
     if (newPats.length > 0) {
       // Pause calls for celebration

@@ -1,11 +1,13 @@
 "use client";
 
+import React from "react";
 import { BOARDS } from "../constants";
 import { levelOf, xpProg, buildPats } from "../helpers";
 import type { RunResult } from "../types";
 import Panel from "./Panel";
 import Btn from "./Btn";
 import XpBar from "./XpBar";
+import { sfxBack, sfxLaunch, sfxLevelUp, sfxNewBest } from "../sfx";
 
 interface ResultScreenProps {
   result: RunResult;
@@ -20,6 +22,15 @@ export default function ResultScreen({ result, xp, frags, onHub, onNext }: Resul
   const lv = levelOf(xp);
   const xp_ = xpProg(xp);
   const pats = rBoard ? buildPats(rBoard.size) : [];
+
+  // Play one-shot result sounds on mount
+  const played = React.useRef(false);
+  React.useEffect(() => {
+    if (played.current) return;
+    played.current = true;
+    if (result.isNew) setTimeout(sfxNewBest, 300);
+    if (result.lvUp) setTimeout(sfxLevelUp, 500);
+  }, [result]);
 
   return (
     <div className="screen">
@@ -78,8 +89,8 @@ export default function ResultScreen({ result, xp, frags, onHub, onNext }: Resul
       )}
 
       <div style={{ display: "flex", gap: 8, animation: "fadeUp .5s .28s both" }}>
-        <Btn label="← HUB" ghost sm onClick={onHub} />
-        <Btn label="▶  NEXT RUN" primary onClick={onNext} style={{ flex: 1 }} />
+        <Btn label="← HUB" ghost sm onClick={() => { sfxBack(); onHub(); }} />
+        <Btn label="▶  NEXT RUN" primary onClick={() => { sfxLaunch(); onNext(); }} style={{ flex: 1 }} />
       </div>
     </div>
   );

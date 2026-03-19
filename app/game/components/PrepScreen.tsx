@@ -5,6 +5,7 @@ import { BOARDS, ABILITIES } from "../constants";
 import { deriveStats, getCellWidth } from "../helpers";
 import Panel from "./Panel";
 import Btn from "./Btn";
+import { sfxHover, sfxClick, sfxPlace, sfxRemove, sfxReroll, sfxTab, sfxLaunch, sfxBack } from "../sfx";
 
 interface PrepScreenProps {
   frags: number;
@@ -35,17 +36,22 @@ export default function PrepScreen({ frags, unlocked, boardId, switchBoard, plac
   function clickCell(idx: number) {
     if (!heldAb) {
       if (placed[idx]) {
+        sfxRemove();
         const n = { ...placed };
         delete n[idx];
         setPlaced(n);
+      } else {
+        sfxClick();
       }
       return;
     }
     const n = { ...placed };
     if (n[idx] === heldAb) {
+      sfxRemove();
       delete n[idx];
     } else {
       if (usedSlots >= st.slots && !n[idx]) return;
+      sfxPlace();
       n[idx] = heldAb;
     }
     setPlaced(n);
@@ -62,7 +68,7 @@ export default function PrepScreen({ frags, unlocked, boardId, switchBoard, plac
           <div style={{ fontSize: 12, letterSpacing: ".3em", color: "var(--mut)" }}>PREPARE RUN</div>
           <div style={{ fontSize: 12, color: "var(--mut)", marginTop: 3 }}>◈ {frags}  ·  {st.slots} slot{st.slots !== 1 ? "s" : ""}  ·  {usedSlots} placed</div>
         </div>
-        <Btn label="← BACK" ghost sm onClick={onBack} />
+        <Btn label="← BACK" ghost sm onClick={() => { sfxBack(); onBack(); }} />
       </div>
 
       {ownedBs.length > 1 && (
@@ -81,7 +87,7 @@ export default function PrepScreen({ frags, unlocked, boardId, switchBoard, plac
                     color: active ? bd.color : "var(--mut)",
                     boxShadow: active ? `0 0 12px ${bd.color}22` : undefined,
                   }}
-                  onClick={() => switchBoard(bd.id)}
+                  onClick={() => { sfxTab(); switchBoard(bd.id); }}
                 >
                   {bd.name}
                 </button>
@@ -109,7 +115,7 @@ export default function PrepScreen({ frags, unlocked, boardId, switchBoard, plac
                     color: held ? ab.color : "var(--mut)",
                     boxShadow: held ? `0 0 14px ${ab.color}28` : undefined,
                   }}
-                  onClick={() => setHeldAb(held ? null : ab.id)}
+                  onClick={() => { sfxClick(); setHeldAb(held ? null : ab.id); }}
                 >
                   {ab.icon} {ab.name}
                 </button>
@@ -131,7 +137,7 @@ export default function PrepScreen({ frags, unlocked, boardId, switchBoard, plac
             <button
               className="btn btn-sm"
               disabled={rerollsLeft <= 0}
-              onClick={doReroll}
+              onClick={() => { sfxReroll(); doReroll(); }}
               style={{
                 borderColor: rerollsLeft > 0 ? "rgba(200,200,200,.35)" : "var(--bdr)",
                 border: "1px solid",
@@ -153,7 +159,7 @@ export default function PrepScreen({ frags, unlocked, boardId, switchBoard, plac
                   key={i}
                   className="cell"
                   onClick={() => clickCell(i)}
-                  onMouseEnter={() => setHoverIdx(i)}
+                  onMouseEnter={() => { sfxHover(); setHoverIdx(i); }}
                   onMouseLeave={() => setHoverIdx(null)}
                   style={{
                     width: cw,
@@ -204,7 +210,7 @@ export default function PrepScreen({ frags, unlocked, boardId, switchBoard, plac
         </div>
       </Panel>
 
-      <Btn label="▶  LAUNCH RUN" primary full onClick={onLaunch} style={{ marginTop: 4 }} />
+      <Btn label="▶  LAUNCH RUN" primary full onClick={() => { sfxLaunch(); onLaunch(); }} style={{ marginTop: 4 }} />
     </div>
   );
 }

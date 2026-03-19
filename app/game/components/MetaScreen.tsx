@@ -7,6 +7,7 @@ import Panel from "./Panel";
 import Btn from "./Btn";
 import XpBar from "./XpBar";
 import TLNodeComp from "./TLNode";
+import { sfxLaunch, sfxBuy } from "../sfx";
 
 interface MetaScreenProps {
   xp: number;
@@ -25,6 +26,7 @@ export default function MetaScreen({ xp, frags, runs, bestRun, unlocked, onBuy, 
   const xp_ = xpProg(xp);
 
   const withOwned = (node: TLNodeData | null) => node ? { ...node, _owned: unlocked.has(node.id) } : null;
+  const buyWithSfx = (node: TLNodeData) => { sfxBuy(); onBuy(node); };
 
   return (
     <div className="screen">
@@ -58,7 +60,7 @@ export default function MetaScreen({ xp, frags, runs, bestRun, unlocked, onBuy, 
       </Panel>
 
       {/* CTA */}
-      <Btn label="▶  PREPARE RUN" primary full onClick={onPrepare} style={{ marginTop: 14, marginBottom: 14 }} />
+      <Btn label="▶  PREPARE RUN" primary full onClick={() => { sfxLaunch(); onPrepare(); }} style={{ marginTop: 14, marginBottom: 14 }} />
 
       {/* Track labels */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 58px 1fr", marginBottom: 4 }}>
@@ -84,7 +86,7 @@ export default function MetaScreen({ xp, frags, runs, bestRun, unlocked, onBuy, 
               <div className="tl-left">
                 {row.lft && (
                   <>
-                    <TLNodeComp node={withOwned(row.lft)} unlockLv={row.lv} reverse level={lv} frags={frags} onBuy={onBuy} />
+                    <TLNodeComp node={withOwned(row.lft)} unlockLv={row.lv} reverse level={lv} frags={frags} onBuy={buyWithSfx} />
                     <div className="tl-connector" style={{ background: unlocked.has(row.lft?.id) ? row.lft.color + "44" : SPINE_DIM }} />
                   </>
                 )}
@@ -107,7 +109,7 @@ export default function MetaScreen({ xp, frags, runs, bestRun, unlocked, onBuy, 
                       background: ctrOwned ? row.ctr.color + "13" : ctrAvail ? "rgba(255,255,255,.04)" : "rgba(255,255,255,.01)",
                       borderColor: ctrOwned ? row.ctr.color + "30" : ctrAvail ? "rgba(255,255,255,.1)" : "rgba(255,255,255,.03)",
                     }}
-                    onClick={ctrBuyable ? () => onBuy(row.ctr!) : undefined}
+                    onClick={ctrBuyable ? () => buyWithSfx(row.ctr!) : undefined}
                   >
                     {row.ctr.icon} {row.ctr.label}
                     {ctrOwned && <span style={{ opacity: 0.55, marginLeft: 2 }}>✓</span>}
@@ -125,7 +127,7 @@ export default function MetaScreen({ xp, frags, runs, bestRun, unlocked, onBuy, 
                 {row.rgt && (
                   <>
                     <div className="tl-connector" style={{ background: unlocked.has(row.rgt?.id) ? row.rgt.color + "44" : SPINE_DIM }} />
-                    <TLNodeComp node={withOwned(row.rgt)} unlockLv={row.lv} reverse={false} level={lv} frags={frags} onBuy={onBuy} />
+                    <TLNodeComp node={withOwned(row.rgt)} unlockLv={row.lv} reverse={false} level={lv} frags={frags} onBuy={buyWithSfx} />
                   </>
                 )}
               </div>
